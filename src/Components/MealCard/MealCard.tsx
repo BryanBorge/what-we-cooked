@@ -1,0 +1,81 @@
+import React, { useState } from "react";
+import { Typography, CardMedia, Rating, Chip, Stack, Tooltip } from "@mui/material";
+import { Card, CardContent } from "@mui/material";
+import { MealCardDialog } from "../MealCardDialog/MealCardDialog";
+import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
+
+export type MealHistory = {
+  date: string;
+  notes: string;
+  image: string;
+};
+
+interface MealCardProps {
+  name: string;
+  lastCookedDate: string;
+  rating: number;
+  image: string;
+  description: string;
+  history: MealHistory[];
+  ingredients: string[];
+}
+
+const useMealCard = () => {
+  const [mealDialogOpen, setMealDialogOpen] = useState(false);
+
+  return {
+    open: mealDialogOpen,
+    handleOpen: () => setMealDialogOpen(true),
+    handleClose: () => setMealDialogOpen(false),
+  };
+};
+
+export const MealCard = (props: MealCardProps) => {
+  const { open, handleOpen, handleClose } = useMealCard();
+
+  const numberOfTimesCooked = props.history.length;
+
+  return (
+    <>
+      <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }} onClick={handleOpen}>
+        <CardMedia component="img" height="194" image={props.image}></CardMedia>
+        <CardContent sx={{ p: 1 }}>
+          <Stack>
+            <Stack direction="row">
+              {numberOfTimesCooked >= 3 && (
+                <Tooltip title="This meal is popular">
+                  <LocalFireDepartmentIcon sx={{ color: "#CF1920" }} />
+                </Tooltip>
+              )}
+              <Typography variant="h3">{props.name}</Typography>
+            </Stack>
+            <Typography variant="subtitle2" color="text.secondary">
+              Cooked {numberOfTimesCooked > 1 && numberOfTimesCooked}{" "}
+              {numberOfTimesCooked > 1 ? "times" : "once"}
+            </Typography>
+          </Stack>
+          <Stack direction="row" spacing={0.5} py={1}>
+            {props.ingredients.map(ingredient => {
+              return <Chip label={ingredient} size="small" color="primary" />;
+            })}
+          </Stack>
+          <Typography variant="subtitle2" gutterBottom color="text.secondary">
+            Last cooked: {props.lastCookedDate}
+          </Typography>
+          <Rating sx={{ top: 20 }} name="read-only" value={props.rating} readOnly />
+        </CardContent>
+      </Card>
+      <MealCardDialog
+        name={props.name}
+        rating={props.rating}
+        lastCookedDate={props.lastCookedDate}
+        description={props.description}
+        open={open}
+        history={props.history}
+        image={props.image}
+        ingredients={props.ingredients}
+        onClose={handleClose}
+      />
+    </>
+  );
+};
