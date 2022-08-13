@@ -12,7 +12,7 @@ export const Login = () => {
     if (user) {
       navigate(`/manage-meals`);
     }
-  }, []);
+  });
 
   return (
     <Container maxWidth="xs">
