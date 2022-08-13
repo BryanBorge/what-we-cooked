@@ -1,15 +1,21 @@
-import React from "react";
-import { MealCard } from "./Components/MealCard/MealCard";
-import { data } from "./mealData";
-import { Box, Grid } from "@mui/material";
 import { BrandingProvider } from "./Components/BrandingProvider/BrandingProvider";
 import { ContentLayout } from "./Components/ContentLayout";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { BrowserRouter } from "react-router-dom";
+import { ProvideAuth } from "./Context/AuthContext";
 
 function App() {
   return (
-    <BrandingProvider>
-      <ContentLayout />
-    </BrandingProvider>
+    <ProvideAuth>
+      <LocalizationProvider dateAdapter={AdapterMoment}>
+        <BrandingProvider>
+          <BrowserRouter>
+            <ContentLayout />
+          </BrowserRouter>
+        </BrandingProvider>
+      </LocalizationProvider>
+    </ProvideAuth>
   );
 }
 

@@ -27,6 +27,7 @@ export const BrandingProvider = ({ children }: any) => {
       },
     },
     typography: {
+      fontFamily: "Poppins",
       h1: {
         fontSize: "2rem", //32pt
       },
