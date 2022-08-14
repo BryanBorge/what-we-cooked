@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Fab } from "@mui/material";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import { MealFormDialog } from "../../Components/MealForm/MealFormDialog";
+import { useAuth } from "../../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const useManageMeals = () => {
   const [mealFormDialogOpen, setMealFormDialogOpen] = useState(false);
@@ -15,6 +17,14 @@ const useManageMeals = () => {
 
 export const ManageMeals = () => {
   const { open, handleOpen, handleClose } = useManageMeals();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate(`/login`);
+    }
+  });
 
   return (
     <Box>

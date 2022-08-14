@@ -10,6 +10,8 @@ interface Response {
 type User = {
   email?: string;
   name?: string;
+  firstName?: string;
+  lastName?: string;
   role?: "user" | "publisher" | "admin";
   token?: string;
 };
@@ -28,7 +30,7 @@ type AuthContext = {
   loading: boolean;
   login: (email: string, password: string) => void;
   logout: () => void;
-  register: (name: string, email: string, password: string) => void;
+  register: (firstName: string, lastName: string, email: string, password: string) => void;
   getUser: (token: string) => void;
 };
 
@@ -62,7 +64,7 @@ export const useAuth = () => {
 // Provider hook that creates auth object and handles state
 const useProvideAuth = () => {
   const [user, setUser] = useState<User | undefined>(undefined);
-  const [token, setUserInLocalStoratge] = useLocalStorage<string>("token", "");
+  const [token, setUserInLocalStorage] = useLocalStorage<string>("token", "");
   const [error, setError] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -73,11 +75,12 @@ const useProvideAuth = () => {
         password: password,
       })
       .then(response => {
+        setError(undefined);
         setLoading(true);
         console.log(response.data);
         getUser(response.data.token);
         setUser({ ...user, token: response.data.token });
-        setUserInLocalStoratge(response.data.token);
+        setUserInLocalStorage(response.data.token);
         setLoading(false);
       })
       .catch(error => {
@@ -88,18 +91,21 @@ const useProvideAuth = () => {
       });
   };
 
-  const register = (name: string, email: string, password: string) => {
+  const register = (firstName: string, lastName: string, email: string, password: string) => {
     axios
       .post("http://localhost:5000/api/v1/auth/register", {
-        name: name,
+        name: `${firstName} ${lastName}`,
+        firstName: firstName,
+        lastName: lastName,
         email: email,
         password: password,
       })
       .then(response => {
+        setError(undefined);
         setLoading(true);
         const { data }: { data: RegisterResponse } = response;
         getUser(data.token);
-        setUserInLocalStoratge(data.token);
+        setUserInLocalStorage(data.token);
         console.log(response.data);
         setLoading(false);
       })
@@ -118,13 +124,21 @@ const useProvideAuth = () => {
         },
       })
       .then(response => {
+        setError(undefined);
         setLoading(true);
         const { data }: { data: GetUserResponse } = response;
         if (!data.success) {
           console.log("Something went wrong", data);
         }
 
-        setUser({ ...user, name: data.user.name, email: data.user.email, role: data.user.role });
+        setUser({
+          ...user,
+          name: data.user.name,
+          firstName: data.user.firstName,
+          lastName: data.user.lastName,
+          email: data.user.email,
+          role: data.user.role,
+        });
         console.log(response);
         setLoading(false);
       })
@@ -135,7 +149,10 @@ const useProvideAuth = () => {
       });
   };
 
-  const logout = () => {};
+  const logout = () => {
+    setUser(undefined);
+    setUserInLocalStorage("");
+  };
 
   return {
     user,

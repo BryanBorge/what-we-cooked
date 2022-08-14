@@ -37,8 +37,11 @@ export const RegisterForm = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values: any) => {
-      register(`${values.firstName} ${values.lastName}`, values.email, values.password);
-      navigate(`/manage-meals`);
+      register(values.firstName, values.lastName, values.email, values.password);
+      console.log("error in register", error);
+      if (!error) {
+        navigate(`/profile`);
+      }
     },
   });
 
@@ -99,7 +102,7 @@ export const RegisterForm = () => {
                 helperText={formik.touched.email && formik.errors.email}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 required
                 fullWidth
@@ -112,6 +115,9 @@ export const RegisterForm = () => {
                 error={(formik.touched.password && Boolean(formik.errors.password)) || Boolean(error)}
                 helperText={(formik.touched.password && formik.errors.password) || error}
               />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField fullWidth id="phone" label="Phone Number" name="phone" value={"(555) 555- 5555"} />
             </Grid>
             {/* <Grid item xs={12}>
               <FormControlLabel

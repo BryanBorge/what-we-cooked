@@ -36,7 +36,9 @@ export const LoginForm = () => {
     validationSchema: validationSchema,
     onSubmit: (values: any) => {
       login(values.email, values.password);
-      navigate(`/manage-meals`);
+      if (!error) {
+        navigate(`/profile`);
+      }
     },
   });
 

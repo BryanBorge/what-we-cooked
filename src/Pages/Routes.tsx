@@ -4,7 +4,7 @@ import { ManageMeals } from "./ManageMeals/ManageMeals";
 import { Register } from "./LoginRegister/Register";
 import { Login } from "./LoginRegister/Login";
 import { useAuth } from "../Context/AuthContext";
-
+import { Profile } from "./Profile/Profile";
 export const MainRoutes = (props: any) => {
   return (
     <Routes>
@@ -14,6 +14,14 @@ export const MainRoutes = (props: any) => {
         element={
           <ProtectedRoute>
             <ManageMeals />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
           </ProtectedRoute>
         }
       />

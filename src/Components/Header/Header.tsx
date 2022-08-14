@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
+import DinnerDiningIcon from "@mui/icons-material/DinnerDining";
 
 export const Header = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <Box sx={{ flexGrow: 1, textDecoration: "none" }}>
@@ -28,10 +29,13 @@ export const Header = () => {
           </Typography>
           {user ? (
             <Stack direction="row" spacing={2}>
-              <Button component={Link} to="/manage-meals" color="inherit" startIcon={<PersonIcon />}>
+              <Button component={Link} to="/manage-meals" color="inherit" startIcon={<DinnerDiningIcon />}>
+                Manage Meals
+              </Button>
+              <Button component={Link} to="/profile" color="inherit" startIcon={<PersonIcon />}>
                 Profile
               </Button>
-              <Button color="inherit" endIcon={<LogoutIcon />}>
+              <Button color="inherit" endIcon={<LogoutIcon />} onClick={() => logout()}>
                 Logout
               </Button>
             </Stack>

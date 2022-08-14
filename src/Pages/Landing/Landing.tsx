@@ -2,8 +2,12 @@ import { Typography, Box, Container, Grid, Stack, Button } from "@mui/material";
 import { data } from "../../mealData";
 import { MealCard } from "../../Components/MealCard/MealCard";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../Context/AuthContext";
+import DinnerDiningIcon from "@mui/icons-material/DinnerDining";
 
 export const LandingPage = () => {
+  const { user } = useAuth();
+
   return (
     <>
       <Container maxWidth="sm">
@@ -16,30 +20,32 @@ export const LandingPage = () => {
             your friends and family? What We Cooked is the perfect place for all of this and more. Share the
             meals you've cooked and explore what others have cooked!
           </Typography>
-          <Stack direction="row" spacing={4} sx={{ pt: 3 }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              size="large"
-              sx={{ width: "125px" }}
-              component={Link}
-              to="/login">
-              Login
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              sx={{ width: "125px" }}
-              component={Link}
-              to="/register">
-              Register
-            </Button>
-          </Stack>
+          {!user && (
+            <Stack direction="row" spacing={4} sx={{ pt: 3 }}>
+              <Button
+                variant="outlined"
+                color="primary"
+                size="large"
+                sx={{ width: "125px" }}
+                component={Link}
+                to="/login">
+                Login
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                sx={{ width: "125px" }}
+                component={Link}
+                to="/register">
+                Register
+              </Button>
+            </Stack>
+          )}
         </Stack>
       </Container>
-      <Container sx={{ pt: 15 }}>
-        <Typography variant="h2" align="center" color="primary" gutterBottom sx={{ pb: 5}}>
+      <Container sx={{ pt: 10 }}>
+        <Typography variant="h2" align="center" color="primary" gutterBottom sx={{ pb: 5 }}>
           Here's a few meals cooked by other people
         </Typography>
         <Grid container spacing={2}>
