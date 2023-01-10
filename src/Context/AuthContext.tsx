@@ -1,4 +1,4 @@
-import React, { useContext, createContext, useState, AudioHTMLAttributes } from "react";
+import React, { useContext, createContext, useState } from "react";
 import axios from "axios";
 import { useLocalStorage } from "../Hooks/useLocalStorage";
 
@@ -34,7 +34,7 @@ type AuthContext = {
   getUser: (token: string) => void;
 };
 
-const creds = {
+export const creds = {
   ApiBaseUrl: "http://localhost:5000/api/v1",
 };
 
@@ -69,14 +69,14 @@ const useProvideAuth = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const login = (email: string, password: string) => {
+    setError(undefined);
+    setLoading(true);
     axios
       .post(`${creds.ApiBaseUrl}/auth/login`, {
         email: email,
         password: password,
       })
       .then(response => {
-        setError(undefined);
-        setLoading(true);
         console.log(response.data);
         getUser(response.data.token);
         setUser({ ...user, token: response.data.token });
@@ -92,6 +92,8 @@ const useProvideAuth = () => {
   };
 
   const register = (firstName: string, lastName: string, email: string, password: string) => {
+    setError(undefined);
+    setLoading(true);
     axios
       .post("http://localhost:5000/api/v1/auth/register", {
         name: `${firstName} ${lastName}`,
@@ -101,8 +103,6 @@ const useProvideAuth = () => {
         password: password,
       })
       .then(response => {
-        setError(undefined);
-        setLoading(true);
         const { data }: { data: RegisterResponse } = response;
         getUser(data.token);
         setUserInLocalStorage(data.token);
@@ -117,6 +117,9 @@ const useProvideAuth = () => {
   };
 
   const getUser = (token: string) => {
+    setError(undefined);
+    setLoading(true);
+    
     axios
       .get(`${creds.ApiBaseUrl}/auth/me`, {
         headers: {
@@ -124,8 +127,6 @@ const useProvideAuth = () => {
         },
       })
       .then(response => {
-        setError(undefined);
-        setLoading(true);
         const { data }: { data: GetUserResponse } = response;
         if (!data.success) {
           console.log("Something went wrong", data);
