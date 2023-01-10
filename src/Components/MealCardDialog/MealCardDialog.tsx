@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Dialog,
   DialogTitle,
@@ -11,6 +10,8 @@ import {
   Box,
   Chip,
   IconButton,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { MealHistory } from "../MealCard/MealCard";
 import CloseIcon from "@mui/icons-material/Close";
@@ -36,9 +37,11 @@ const useMealCardDialog = (mealDates: any[]) => {
 
 export const MealCardDialog = (props: MealCardDialogProps) => {
   const { mealDates, mostRecentMealDate } = useMealCardDialog(props.history);
+  const theme = useTheme();
+  const tabletAndSmaller = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
-    <Dialog open={props.open} onClose={props.onClose} maxWidth="md" fullWidth>
+    <Dialog open={props.open} onClose={props.onClose} fullScreen={tabletAndSmaller} maxWidth="md" fullWidth>
       <DialogTitle>
         <Stack direction="column">
           <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -78,9 +81,9 @@ export const MealCardDialog = (props: MealCardDialogProps) => {
           </Typography>
           <Typography variant="h5" gutterBottom>
             {mealDates?.length > 1 ? "Last cooked on " : "First cooked on "}
-            {mostRecentMealDate.date}
+            {mostRecentMealDate?.date}
           </Typography>
-          <Typography variant="body2">{mostRecentMealDate.notes}</Typography>
+          <Typography variant="body2">{mostRecentMealDate?.notes}</Typography>
         </Box>
         {mealDates?.length > 1 && (
           <Stack>

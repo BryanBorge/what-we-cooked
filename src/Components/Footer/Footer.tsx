@@ -2,7 +2,7 @@ import { Typography, Box, Link } from "@mui/material";
 
 export const Footer = () => {
   return (
-    <Box sx={{ p: 6 }} component="footer">
+    <Box sx={{ p: 6, position: "relative", bottom: 0, left: 0 }} component="footer">
       <Typography variant="subtitle1" align="center" color="text.secondary" component="p">
         Thanks for cooking with us!
       </Typography>

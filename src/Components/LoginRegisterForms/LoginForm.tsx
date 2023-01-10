@@ -37,7 +37,7 @@ export const LoginForm = () => {
     onSubmit: (values: any) => {
       login(values.email, values.password);
       if (!error) {
-        navigate(`/profile`);
+        navigate(`/manage-meals`);
       }
     },
   });

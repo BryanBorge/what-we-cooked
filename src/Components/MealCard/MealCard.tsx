@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Typography, CardMedia, Rating, Chip, Stack, Tooltip, CardActions, Button } from "@mui/material";
 import { Card, CardContent } from "@mui/material";
 import { MealCardDialog } from "../MealCardDialog/MealCardDialog";
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import { useTheme } from "@mui/material/styles";
+import moment from "moment";
 
 export type MealHistory = {
   date: string;
@@ -61,7 +62,7 @@ export const MealCard = (props: MealCardProps) => {
                 {numberOfTimesCooked > 1 ? " times |" : "once |"}
               </Typography>
               <Typography variant="subtitle2" gutterBottom color="text.secondary">
-                Last cooked: {props.lastCookedDate}
+                Last cooked: {moment(props.lastCookedDate).format("LL")}
               </Typography>
             </Stack>
           </Stack>
