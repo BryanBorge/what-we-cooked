@@ -8,9 +8,12 @@ import {
   Button,
   Typography,
   IconButton,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { MealForm } from "./MealForm";
+import { useGlobal } from "../../Context/GlobalContext";
 
 interface MealFormDialogProps {
   title: string;
@@ -19,8 +22,19 @@ interface MealFormDialogProps {
 }
 
 export const MealFormDialog = (props: MealFormDialogProps) => {
+  const { getIngredients, ingredientCategoryList, loading, error } = useGlobal();
+
+  React.useEffect(() => {
+    if (!ingredientCategoryList) {
+      getIngredients();
+    }
+  }, []);
+
+  const theme = useTheme();
+  const tabletAndSmaller = useMediaQuery(theme.breakpoints.down("md"));
+
   return (
-    <Dialog open={props.open} onClose={props.onClose} maxWidth="sm" fullWidth>
+    <Dialog open={props.open} fullScreen={tabletAndSmaller} onClose={props.onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
         <Stack direction="column">
           <Stack direction="row" justifyContent="space-between" alignItems="center">

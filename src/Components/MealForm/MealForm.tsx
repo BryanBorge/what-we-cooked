@@ -19,10 +19,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { useFormik } from "formik";
-import { Formik, Field, Form } from "formik";
 import * as yup from "yup";
 import moment from "moment";
 import { useMeals } from "../../Context/MealContext";
+import Autocomplete from "@mui/material/Autocomplete";
+import { useGlobal } from "../../Context/GlobalContext";
+import parse from "autosuggest-highlight/parse";
+import match from "autosuggest-highlight/match";
 
 const validationSchema = yup.object({
   // name: yup.string().required("Enter a name for your meal"),
@@ -30,7 +33,7 @@ const validationSchema = yup.object({
   // date: yup.date().required("Enter the date you cooked this"),
   date: yup.date(),
   picture: yup.string().typeError("Pleas enter a link for your image"),
-  ingredient: yup.string(),
+  ingredient: yup.array(),
   // notes: yup.string().required("Are you sure you have nothing to say about this meal?"),
   notes: yup.string(),
   // rating: yup.number().required("Rate this meal"),
@@ -38,10 +41,9 @@ const validationSchema = yup.object({
 });
 
 export const MealForm = () => {
-  const [ingredients, setIngredients] = useState<string[]>([]);
-  const [ingredient, setIngredient] = useState<string>("");
   const [date, setDate] = useState<Date | null>(new Date());
   const { addMeal } = useMeals();
+  const { ingredientCategoryList } = useGlobal();
 
   const formik = useFormik({
     initialValues: {
@@ -54,7 +56,7 @@ export const MealForm = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values: any) => {
-      values.ingredients = ingredients;
+      console.log("values in submit", values);
       values.date = moment(date).format();
       console.log("THE FORM HAS BEEN SUBMITTED", values);
       addMeal(values.date, values.ingredients, values.name, values.notes, values.picture, values.rating);
@@ -64,23 +66,14 @@ export const MealForm = () => {
   const theme = useTheme();
   const largeScreens = useMediaQuery(theme.breakpoints.up("lg"));
 
-  const AddIndredient = (e: any) => {
-    if (ingredient) {
-      let tempIngredients = [...ingredients];
-      if (tempIngredients) {
-        tempIngredients?.push(ingredient);
-      } else {
-        tempIngredients = [ingredient];
-      }
-      setIngredients(tempIngredients);
-      setIngredient("");
-    }
-  };
+  const ingredientOptions = ingredientCategoryList?.flatMap(ingCat =>
+    ingCat.ingredientList.map(ing => {
+      return { label: ing, category: ingCat.category };
+    })
+  );
 
-  const RemoveIngredient = (ingredientToRemove: string) => {
-    const tempIngredients = [...ingredients];
-    setIngredients(tempIngredients?.filter(ingredient => ingredient !== ingredientToRemove));
-  };
+  // console.log("ingredients", ingredients);
+  console.log("FORM VALUES", formik.values);
 
   return (
     <Box component="form" id="meal-form" noValidate sx={{ mt: 3 }} onSubmit={formik.handleSubmit}>
@@ -132,38 +125,42 @@ export const MealForm = () => {
           helperText={formik.touched.picture && formik.errors.picture}
           variant="outlined"
         />
-        <FormControl>
-          <InputLabel>Ingrediets</InputLabel>
-          <OutlinedInput
-            label="Ingrediets"
-            value={ingredient}
-            onChange={e => setIngredient(e.target.value)}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton onClick={AddIndredient}>
-                  <AddIcon />
-                </IconButton>
-              </InputAdornment>
-            }
-          />
-        </FormControl>
-        {ingredients &&
-          ingredients?.length > 0 &&
-          ingredients.map(ingredient => {
-            return (
-              <List key={ingredient}>
-                <ListItem
-                  disablePadding
-                  secondaryAction={
-                    <IconButton onClick={() => RemoveIngredient(ingredient)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  }>
-                  <ListItemText sx={{ ml: 1 }}>{ingredient}</ListItemText>
-                </ListItem>
-              </List>
+
+        <Autocomplete
+          multiple
+          onChange={(_, value) => {
+            console.log("SELECTED VALUE", value);
+            formik.setFieldValue(
+              "ingredients",
+              value.map(value => value.label)
             );
-          })}
+          }}
+          isOptionEqualToValue={(option, value) => option.label === value.label}
+          options={ingredientOptions ?? []}
+          getOptionLabel={ingredient => ingredient.label}
+          groupBy={ingredient => ingredient.category}
+          renderInput={params => <TextField {...params} label="Ingredients" />}
+          renderOption={(props, option, { inputValue }) => {
+            const matches = match(option.label, inputValue, { insideWords: true });
+            const parts = parse(option.label, matches);
+
+            return (
+              <li {...props}>
+                <div>
+                  {parts.map((part, index) => (
+                    <span
+                      key={index}
+                      style={{
+                        fontWeight: part.highlight ? 700 : 400,
+                      }}>
+                      {part.text}
+                    </span>
+                  ))}
+                </div>
+              </li>
+            );
+          }}
+        />
         <TextField
           label="Notes"
           name="notes"
@@ -172,6 +169,7 @@ export const MealForm = () => {
           error={formik.touched.notes && Boolean(formik.errors.notes)}
           helperText={formik.touched.notes && formik.errors.notes}
           multiline
+          rows={10}
           variant="outlined"
         />
         <Stack spacing={0.5}>
