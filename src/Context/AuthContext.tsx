@@ -68,6 +68,13 @@ const useProvideAuth = () => {
   const [error, setError] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
 
+  //Check local storage for token so we can log the user back in
+  React.useEffect(() => {
+    if (token) {
+      getUser(token);
+    }
+  }, []);
+
   const login = (email: string, password: string) => {
     setError(undefined);
     setLoading(true);
@@ -119,7 +126,7 @@ const useProvideAuth = () => {
   const getUser = (token: string) => {
     setError(undefined);
     setLoading(true);
-    
+
     axios
       .get(`${creds.ApiBaseUrl}/auth/me`, {
         headers: {
