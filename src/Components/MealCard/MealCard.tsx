@@ -1,5 +1,17 @@
 import { useState } from "react";
-import { Typography, CardMedia, Rating, Chip, Stack, Tooltip, CardActions, Button } from "@mui/material";
+import {
+  Typography,
+  CardMedia,
+  Rating,
+  Chip,
+  Stack,
+  Tooltip,
+  CardActions,
+  Button,
+  Box,
+  IconButton,
+} from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Card, CardContent } from "@mui/material";
 import { MealCardDialog } from "../MealCardDialog/MealCardDialog";
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
@@ -40,44 +52,48 @@ export const MealCard = (props: MealCardProps) => {
   return (
     <>
       <Card sx={{ height: "100%", display: "flex", flexDirection: "column", minHeight: "342px" }}>
-        <CardMedia component="img" height="194" image={props.image}></CardMedia>
-        <CardContent sx={{ p: 1 }}>
-          <Stack>
-            <Stack direction="row">
-              {numberOfTimesCooked >= 3 && (
-                <Tooltip title="This meal is popular">
-                  <LocalFireDepartmentIcon sx={{ color: "#CF1920" }} />
-                </Tooltip>
-              )}
-              <Typography
-                variant="h3"
-                style={{ height: `${(theme.typography.h3.lineHeight as number) * 2}rem` }}
-                gutterBottom>
-                {props.name}
-              </Typography>
-            </Stack>
-            <Stack direction="row" spacing={0.5}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Cooked {numberOfTimesCooked > 1 && numberOfTimesCooked}
-                {numberOfTimesCooked > 1 ? " times |" : "once |"}
-              </Typography>
+        <Box sx={{ position: "relative" }}>
+          <CardMedia component="img" height="194" image={props.image}></CardMedia>
+          <Chip
+            label={`Cooked 
+                  ${numberOfTimesCooked > 1 ? numberOfTimesCooked + " times" : "once"}`}
+            sx={{
+              position: "absolute",
+              top: 5,
+              left: 5,
+              bgcolor: "rgba(0, 0, 0, 0.54)",
+              color: "white",
+            }}
+          />
+          <CardContent sx={{ p: 1 }}>
+            <Stack>
+              <Stack direction="row">
+                {numberOfTimesCooked >= 3 && (
+                  <Tooltip title="This meal is popular">
+                    <LocalFireDepartmentIcon sx={{ color: "#CF1920" }} />
+                  </Tooltip>
+                )}
+                <Typography variant="h3" sx={{ flexGrow: "1" }} gutterBottom>
+                  {props.name}
+                </Typography>
+                <IconButton disableRipple sx={{ p: 0 }} onClick={handleOpen}>
+                  <MoreVertIcon />
+                </IconButton>
+              </Stack>
               <Typography variant="subtitle2" gutterBottom color="text.secondary">
-                Last cooked: {moment(props.lastCookedDate).format("LL")}
+                Last cooked: {moment(props.lastCookedDate).fromNow()}
               </Typography>
             </Stack>
-          </Stack>
-          <Stack direction="row" spacing={0.5} py={1}>
-            {props.ingredients.map(ingredient => {
-              return <Chip key={ingredient} label={ingredient} size="small" color="primary" />;
-            })}
-          </Stack>
-        </CardContent>
-        <CardActions sx={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
-          <Rating sx={{ right: 30 }} name="read-only" value={props.rating} readOnly />
-          <Button sx={{ left: 30, textTransform: "none" }} onClick={handleOpen}>
-            See more
-          </Button>
-        </CardActions>
+            <Stack direction="row" spacing={0.5} py={1} flexWrap="wrap" justifyContent="flex-start">
+              {props.ingredients.map(ingredient => {
+                return <Chip key={ingredient} label={ingredient} size="small" color="primary" />;
+              })}
+            </Stack>
+          </CardContent>
+          <CardActions sx={{ display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
+            <Rating name="read-only" value={props.rating} readOnly />
+          </CardActions>
+        </Box>
       </Card>
       <MealCardDialog
         name={props.name}
