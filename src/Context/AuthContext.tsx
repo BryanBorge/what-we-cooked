@@ -2,7 +2,7 @@ import React, { useContext, createContext, useState } from "react";
 import axios from "axios";
 import { useLocalStorage } from "../Hooks/useLocalStorage";
 
-interface Response {
+export interface Response {
   success: boolean;
   message?: string;
 }

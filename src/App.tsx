@@ -5,20 +5,23 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { BrowserRouter } from "react-router-dom";
 import { ProvideAuth } from "./Context/AuthContext";
 import { ProvideMeals } from "./Context/MealContext";
+import { ProvideGlobalContext } from "./Context/GlobalContext";
 
 function App() {
   return (
-    <ProvideAuth>
-      <ProvideMeals>
-        <LocalizationProvider dateAdapter={AdapterMoment}>
-          <BrandingProvider>
-            <BrowserRouter>
-              <ContentLayout />
-            </BrowserRouter>
-          </BrandingProvider>
-        </LocalizationProvider>
-      </ProvideMeals>
-    </ProvideAuth>
+    <ProvideGlobalContext>
+      <ProvideAuth>
+        <ProvideMeals>
+          <LocalizationProvider dateAdapter={AdapterMoment}>
+            <BrandingProvider>
+              <BrowserRouter>
+                <ContentLayout />
+              </BrowserRouter>
+            </BrandingProvider>
+          </LocalizationProvider>
+        </ProvideMeals>
+      </ProvideAuth>
+    </ProvideGlobalContext>
   );
 }
 
