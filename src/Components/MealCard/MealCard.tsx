@@ -7,7 +7,7 @@ import {
   Stack,
   Tooltip,
   CardActions,
-  Button,
+  Avatar,
   Box,
   IconButton,
 } from "@mui/material";
@@ -17,6 +17,7 @@ import { MealCardDialog } from "../MealCardDialog/MealCardDialog";
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import { useTheme } from "@mui/material/styles";
 import moment from "moment";
+import { green } from "@mui/material/colors";
 
 export type MealHistory = {
   date: string;
@@ -32,6 +33,7 @@ interface MealCardProps {
   description: string;
   history: MealHistory[];
   ingredients: string[];
+  user?: string;
 }
 
 const useMealCard = () => {
@@ -51,8 +53,8 @@ export const MealCard = (props: MealCardProps) => {
 
   return (
     <>
-      <Card sx={{ height: "100%", display: "flex", flexDirection: "column", minHeight: "342px" }}>
-        <Box sx={{ position: "relative" }}>
+      <Card sx={{ display: "flex", flexDirection: "column" }}>
+        <Box sx={{ position: "relative" }} height="100%">
           <CardMedia component="img" height="194" image={props.image}></CardMedia>
           <Chip
             label={`Cooked 
@@ -73,9 +75,21 @@ export const MealCard = (props: MealCardProps) => {
                     <LocalFireDepartmentIcon sx={{ color: "#CF1920" }} />
                   </Tooltip>
                 )}
-                <Typography variant="h3" sx={{ flexGrow: "1" }} gutterBottom>
-                  {props.name}
-                </Typography>
+                <Tooltip title={props.name}>
+                  <Typography
+                    variant="h3"
+                    sx={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      display: "-webkit-box",
+                      WebkitLineClamp: "1",
+                      WebkitBoxOrient: "vertical",
+                      flexGrow: "1",
+                    }}
+                    gutterBottom>
+                    {props.name}
+                  </Typography>
+                </Tooltip>
                 <IconButton disableRipple sx={{ p: 0 }} onClick={handleOpen}>
                   <MoreVertIcon />
                 </IconButton>
@@ -91,7 +105,12 @@ export const MealCard = (props: MealCardProps) => {
             </Stack>
           </CardContent>
           <CardActions sx={{ display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
-            <Rating name="read-only" value={props.rating} readOnly />
+            <Rating name="read-only" value={props.rating} readOnly sx={{ flexGrow: 1 }} />
+            {props.user && (
+              <Tooltip title="Meal shared by another user">
+                <Avatar sx={{ width: 32, height: 32, bgcolor: green[500] }}>BB</Avatar>
+              </Tooltip>
+            )}
           </CardActions>
         </Box>
       </Card>
