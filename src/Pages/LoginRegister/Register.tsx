@@ -8,8 +8,6 @@ export const Register = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  console.log("user in register", user);
-
   useEffect(() => {
     if (user) {
       navigate(`/profile`);

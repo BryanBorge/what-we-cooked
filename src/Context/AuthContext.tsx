@@ -84,7 +84,6 @@ const useProvideAuth = () => {
         password: password,
       })
       .then(response => {
-        console.log(response.data);
         getUser(response.data.token);
         setUser({ ...user, token: response.data.token });
         setUserInLocalStorage(response.data.token);
@@ -113,7 +112,6 @@ const useProvideAuth = () => {
         const { data }: { data: RegisterResponse } = response;
         getUser(data.token);
         setUserInLocalStorage(data.token);
-        console.log(response.data);
         setLoading(false);
       })
       .catch(error => {
@@ -147,7 +145,6 @@ const useProvideAuth = () => {
           email: data.user.email,
           role: data.user.role,
         });
-        console.log(response);
         setLoading(false);
       })
       .catch(error => {
