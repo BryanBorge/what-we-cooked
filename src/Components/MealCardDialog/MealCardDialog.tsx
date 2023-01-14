@@ -16,6 +16,7 @@ import {
 import { MealHistory } from "../MealCard/MealCard";
 import CloseIcon from "@mui/icons-material/Close";
 import { CustomTabs } from "../Tabs/Tabs";
+import moment from "moment";
 interface MealCardDialogProps {
   name: string;
   open: boolean;
@@ -81,7 +82,7 @@ export const MealCardDialog = (props: MealCardDialogProps) => {
           </Typography>
           <Typography variant="h5" gutterBottom>
             {mealDates?.length > 1 ? "Last cooked on " : "First cooked on "}
-            {mostRecentMealDate?.date}
+            {mostRecentMealDate?.date ?? moment(props.lastCookedDate).format("LL")}
           </Typography>
           <Typography variant="body2">{mostRecentMealDate?.notes}</Typography>
         </Box>

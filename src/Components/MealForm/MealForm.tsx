@@ -1,21 +1,7 @@
 import { ReactNode, useState } from "react";
-import {
-  TextField,
-  Stack,
-  Rating,
-  FormControl,
-  Typography,
-  InputAdornment,
-  OutlinedInput,
-  InputLabel,
-  IconButton,
-  Box,
-} from "@mui/material";
-import { List, ListItem, ListItemText } from "@mui/material";
+import { TextField, Stack, Rating, Typography, Box, Button } from "@mui/material";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { useFormik } from "formik";
@@ -28,12 +14,18 @@ import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 
 const validationSchema = yup.object({
-  // name: yup.string().required("Enter a name for your meal"),
-  name: yup.string(),
-  // date: yup.date().required("Enter the date you cooked this"),
-  date: yup.date(),
-  picture: yup.string().typeError("Pleas enter a link for your image"),
-  ingredient: yup.array(),
+  name: yup.string().required("Please enter a name for your meal"),
+  date: yup.date().required("Enter the date you cooked this"),
+  image: yup
+    .mixed()
+    .required("Choose a file!")
+    .test("type", "Invalid type!", value => ["image/png", "image/jpeg"].includes(value.type))
+    .test("size", "Too big!", value => value.size < 200000),
+  ingredient: yup
+    .array()
+    // .required("Choose up to 10 ingredients")
+    .min(1, "Please select at least 1 ingredient")
+    .max(10, "Please choose only 10 ingredients"),
   // notes: yup.string().required("Are you sure you have nothing to say about this meal?"),
   notes: yup.string(),
   // rating: yup.number().required("Rate this meal"),
@@ -42,6 +34,7 @@ const validationSchema = yup.object({
 
 export const MealForm = () => {
   const [date, setDate] = useState<Date | null>(new Date());
+  const [uploading, setUploading] = useState<boolean>(false);
   const { addMeal } = useMeals();
   const { ingredientCategoryList } = useGlobal();
 
@@ -49,8 +42,9 @@ export const MealForm = () => {
     initialValues: {
       name: "",
       date: new Date(),
-      picture: "",
-      ingredients: [],
+      // picture: "",
+      image: { name: "", size: 0 },
+      ingredients: undefined,
       rating: 0,
       notes: "",
     },
@@ -58,8 +52,11 @@ export const MealForm = () => {
     onSubmit: (values: any) => {
       console.log("values in submit", values);
       values.date = moment(date).format();
+      if (!values.notes) {
+        alert("Are you sure you dont want to add notes?");
+      }
       console.log("THE FORM HAS BEEN SUBMITTED", values);
-      addMeal(values.date, values.ingredients, values.name, values.notes, values.picture, values.rating);
+      // addMeal(values.date, values.ingredients, values.name, values.notes, values.picture, values.rating);
     },
   });
 
@@ -73,7 +70,9 @@ export const MealForm = () => {
   );
 
   // console.log("ingredients", ingredients);
+  console.log("FORM ERR", formik.errors);
   console.log("FORM VALUES", formik.values);
+  console.log("FORM VALUES", formik.values.image.name);
 
   return (
     <Box component="form" id="meal-form" noValidate sx={{ mt: 3 }} onSubmit={formik.handleSubmit}>
@@ -116,20 +115,34 @@ export const MealForm = () => {
             renderInput={params => <TextField {...params} />}
           />
         )}
-        <TextField
-          label="Picture"
-          name="picture"
-          onChange={formik.handleChange}
-          value={formik.values.picture}
-          error={formik.touched.picture && Boolean(formik.errors.picture)}
-          helperText={formik.touched.picture && formik.errors.picture}
-          variant="outlined"
-        />
+        <Stack direction="row" justifyContent="flexStart" alignItems="center" spacing={1}>
+          <Button variant="contained" component="label">
+            Choose Picture
+            <input
+              hidden
+              accept="image/*"
+              multiple
+              type="file"
+              name="image"
+              onChange={e => {
+                if (!e.target.files) return;
+                setUploading(true);
+                console.log("e?.target?.files", e?.target?.files);
+                formik.setFieldValue("image", e?.target?.files[0] ?? "");
+                setUploading(false);
+              }}
+            />
+          </Button>
+          {formik.values.image && !formik.errors.image && <Typography>{formik.values.image.name}</Typography>}
+          {!formik.values.image && !formik.touched.image && <Typography>No picture choosen</Typography>}
+          {Boolean(formik.errors.image) && (
+            <Typography color="red">{formik.errors.image as ReactNode}</Typography>
+          )}
+        </Stack>
 
         <Autocomplete
           multiple
           onChange={(_, value) => {
-            console.log("SELECTED VALUE", value);
             formik.setFieldValue(
               "ingredients",
               value.map(value => value.label)
@@ -139,7 +152,14 @@ export const MealForm = () => {
           options={ingredientOptions ?? []}
           getOptionLabel={ingredient => ingredient.label}
           groupBy={ingredient => ingredient.category}
-          renderInput={params => <TextField {...params} label="Ingredients" />}
+          renderInput={params => (
+            <TextField
+              {...params}
+              error={formik.touched.ingredients && Boolean(formik.errors.ingredients)}
+              helperText={formik.touched.ingredients && formik.errors.ingredients}
+              label="Ingredients"
+            />
+          )}
           renderOption={(props, option, { inputValue }) => {
             const matches = match(option.label, inputValue, { insideWords: true });
             const parts = parse(option.label, matches);
