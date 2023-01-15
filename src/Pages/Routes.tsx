@@ -5,12 +5,29 @@ import { Register } from "./LoginRegister/Register";
 import { Login } from "./LoginRegister/Login";
 import { useAuth } from "../Context/AuthContext";
 import { Profile } from "./Profile/Profile";
-export const MainRoutes = (props: any) => {
+
+export enum Pages {
+  "MANAGEMEALS" = "manage-meals",
+  "PROFILE" = "profile",
+  "LOGIN" = "login",
+  "REGISTER" = "register",
+  "LANDING" = "/",
+}
+
+export enum RoutePath {
+  "MANAGEMEALS" = "/manage-meals",
+  "PROFILE" = "/profile",
+  "REGISTER" = "/register",
+  "LOGIN" = "/login",
+  "LANDING" = "/",
+}
+
+export const MainRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
+      <Route path={RoutePath["LANDING"]} element={<LandingPage />} />
       <Route
-        path="/manage-meals"
+        path={RoutePath["MANAGEMEALS"]}
         element={
           <ProtectedRoute>
             <ManageMeals />
@@ -18,15 +35,15 @@ export const MainRoutes = (props: any) => {
         }
       />
       <Route
-        path="/profile"
+        path={RoutePath["PROFILE"]}
         element={
           <ProtectedRoute>
             <Profile />
           </ProtectedRoute>
         }
       />
-      <Route path="/register" element={<Register />} />
-      <Route path="/login" element={<Login />} />
+      <Route path={RoutePath["REGISTER"]} element={<Register />} />
+      <Route path={RoutePath["LOGIN"]} element={<Login />} />
     </Routes>
   );
 };
