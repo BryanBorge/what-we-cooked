@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Typography, Box, Container, Grid, Stack, Button, Skeleton } from "@mui/material";
-import { data } from "../../mealData";
 import { MealCard } from "../../Components/MealCard/MealCard";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
